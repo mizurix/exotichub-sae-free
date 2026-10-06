@@ -1,9 +1,12 @@
-local GITHUB_BASE = "https://raw.githubusercontent.com/mizurix/exotic-sae-free/main/"
-
+--// Exotic Hub - Official Master GitHub Loader
 local success, err = pcall(function()
-    local LucideIcons = loadstring(game:HttpGet(GITHUB_BASE .. "full_stage_3.lua"))()
+    local baseURL = "https://raw.githubusercontent.com/mizurix/exotichub-sae-free/main/"
 
-    local Library = loadstring(game:HttpGet(GITHUB_BASE .. "full_stage_2.lua"))()
+    print("[*] Fetching Lucide Icons from GitHub...")
+    local LucideIcons = loadstring(game:HttpGet(baseURL .. "icons.lua"))()
+
+    print("[*] Fetching UI Library from GitHub...")
+    local Library = loadstring(game:HttpGet(baseURL .. "library.lua"))()
     Library.ShowCustomCursor = false
 
     pcall(function()
@@ -11,6 +14,7 @@ local success, err = pcall(function()
     end)
     game:GetService("UserInputService").MouseIconEnabled = true
 
+    print("[*] Initializing Window...")
     local Window = Library:CreateWindow({
         Title = "Exotic Hub - Steal An Egg",
         Footer = "v15",
@@ -19,19 +23,21 @@ local success, err = pcall(function()
         ShowCustomCursor = false
     })
 
-    local stage4Chunk = loadstring(game:HttpGet(GITHUB_BASE .. "full_stage_4.lua"))
+    print("[*] Fetching and Running Main Payload...")
+    local payloadCode = game:HttpGet(baseURL .. "payload.lua")
+    local payloadFunc = loadstring(payloadCode)
     
-    stage4Chunk({
+    payloadFunc({
         IsPremium = function() return true end,
-        RegisterReset = function() end,
+        RegisterReset = function(cb) _G.ResetStealAnEgg = cb end,
         Library = Library,
         Window = Window,
         Icons = LucideIcons
     })
 
-    print("[+] Steal An Egg Hub loaded successfully from GitHub!")
+    print("[+] Exotic Hub loaded successfully from GitHub!")
 end)
 
 if not success then
-    warn("[Loader Error] Failed to initialize: " .. tostring(err))
+    warn("[Loader Error]: " .. tostring(err))
 end
